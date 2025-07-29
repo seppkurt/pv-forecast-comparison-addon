@@ -1,40 +1,31 @@
-# PV Forecast Comparison for Home Assistant
+# PV Forecast Comparison Add-on
 
-This system compares PV production forecasts with actual production data in Home Assistant. It stores forecast data at 4 AM, 11 AM, 3 PM, and 11 PM to track forecast accuracy and production patterns.
+A Home Assistant add-on that compares PV production forecasts with actual production data. It automatically collects data at 4 AM, 11 AM, 3 PM, and 11 PM to track forecast accuracy and production patterns.
 
 ## Features
 
-- **Home Assistant Add-on**: Easy one-click installation
-- **Web Interface**: Built-in monitoring and manual data collection
-- **REST API**: Integration endpoints for external systems
+- **Automated Data Collection**: Scheduled collection at 4 AM, 11 AM, 3 PM, and 11 PM
+- **Web Interface**: Built-in web UI for monitoring and manual data collection
 - **SQLite Database**: Reliable data storage with automatic backups
-- **Scheduled Collection**: Automated data collection at configurable times
+- **Configurable Entities**: Easy configuration of PV entity names
+- **REST API**: API endpoints for integration with other systems
 - **Real-time Monitoring**: Live status and data viewing
 
 ## Installation
 
-### Quick Start (Recommended)
+### Method 1: Manual Installation
 
-1. **Add Repository to Home Assistant:**
+1. Download the add-on files to your Home Assistant `/addons` directory
+2. Add the repository to your Home Assistant Supervisor
+3. Install the add-on from the Add-on Store
+
+### Method 2: Direct Repository
+
+Add this repository to your Home Assistant Supervisor:
+
    ```
-   https://github.com/your-username/pv-forecast-comparison-addon
+   https://github.com/seppkurt/pv-forecast-comparison-addon
    ```
-
-2. **Install Add-on:**
-   - Go to **Settings** → **Add-ons** → **Add-on Store**
-   - Search for "PV Forecast Comparison"
-   - Click **Install**
-
-3. **Configure:**
-   - Set your **Home Assistant URL** and **Long-lived Access Token**
-   - Click **Start**
-
-4. **Access Web Interface:**
-   - Click **Open Web UI** in the add-on page
-
-### Manual Installation
-
-See [ADDON_INSTALLATION.md](ADDON_INSTALLATION.md) for detailed installation instructions.
 
 ## Configuration
 
@@ -46,10 +37,10 @@ See [ADDON_INSTALLATION.md](ADDON_INSTALLATION.md) for detailed installation ins
 ### Optional Settings
 
 - **Forecast Entities**: List of entities to try for PV forecast data
-- **Production Entities**: List of entities to try for current PV production  
+- **Production Entities**: List of entities to try for current PV production
 - **Daily Entities**: List of entities to try for daily PV production
 - **Collection Times**: Customize when data is collected
-- **Log Level**: Set logging verbosity
+- **Log Level**: Set logging verbosity (DEBUG, INFO, WARNING, ERROR)
 
 ### Entity Configuration
 
@@ -77,16 +68,15 @@ The add-on will automatically try these common entity names:
 
 ### Web Interface
 
-Access the web interface through the add-on page. Features include:
+Access the web interface at `http://your-ha-ip:8123` after installation. The interface provides:
 
-- **Manual Data Collection**: Buttons for each time slot
-- **System Status**: Real-time status monitoring
-- **Latest Data**: View collected data in JSON format
-- **Auto-refresh**: Updates every 30 seconds
+- **Manual Data Collection**: Buttons to trigger data collection for each time slot
+- **System Status**: Real-time status of the add-on
+- **Latest Data**: View the most recent collected data
 
-### REST API
+### API Endpoints
 
-The add-on provides these API endpoints:
+The add-on provides REST API endpoints:
 
 - `GET /api/status` - Get system status
 - `GET /api/data` - Get latest data
@@ -117,7 +107,7 @@ curl http://your-ha-ip:8123/api/data
 
 ## Data Storage
 
-Data is stored in a SQLite database with two main tables:
+Data is stored in a SQLite database at `/data/pv_forecast.db` with two main tables:
 
 ### pv_forecast table
 - `id`: Primary key
@@ -134,50 +124,13 @@ Data is stored in a SQLite database with two main tables:
 - `total_actual_wh`: Total actual production for the day
 - `timestamp`: When the data was stored
 
-## Integration with Home Assistant
-
-### REST Sensors
-
-Add these to your `configuration.yaml`:
-
-```yaml
-sensor:
-  - platform: rest
-    name: "PV Forecast Data"
-    resource: http://localhost:8123/api/data
-    scan_interval: 300
-    value_template: "{{ value }}"
-    
-  - platform: rest
-    name: "PV Forecast Status"
-    resource: http://localhost:8123/api/status
-    scan_interval: 300
-    value_template: "{{ value_json.online }}"
-```
-
-### Automations
-
-```yaml
-automation:
-  - alias: "PV Forecast Manual Collection"
-    trigger:
-      - platform: event
-        event_type: pv_forecast_manual_trigger
-    action:
-      - service: rest_command.pv_forecast_collect
-        data:
-          url: http://localhost:8123/api/collect
-          method: POST
-          payload: '{"time_slot": "{{ trigger.event.data.time_slot }}"}'
-```
-
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Add-on won't start**: Check configuration and logs
-2. **No data collected**: Verify entity names and access token
-3. **Web interface not accessible**: Check port conflicts
+1. **Add-on won't start**: Check the logs in the add-on page
+2. **No data collected**: Verify your entity names and access token
+3. **Web interface not accessible**: Check if port 8123 is available
 
 ### Logs
 
@@ -193,34 +146,37 @@ docker exec -it addon_pv_forecast_comparison sh
 sqlite3 /data/pv_forecast.db "SELECT * FROM pv_forecast ORDER BY date DESC LIMIT 10;"
 ```
 
-## Maintenance
+## Development
 
-### Backup Data
-
-```bash
-# In SSH & Web Terminal
-cp /data/pv_forecast.db /backup/pv_forecast.db.backup
-```
-
-### Clean Old Data
+### Building the Add-on
 
 ```bash
-# Access the add-on container
-docker exec -it addon_pv_forecast_comparison sh
+# Clone the repository
+git clone https://github.com/seppkurt/pv-forecast-comparison-addon
 
-# Clean old data
-sqlite3 /data/pv_forecast.db "DELETE FROM pv_forecast WHERE date < date('now', '-30 days');"
+# Build the add-on
+docker build -t pv-forecast-comparison .
+
+# Run locally for testing
+docker run -p 8123:8123 -v /path/to/data:/data pv-forecast-comparison
 ```
 
-## Support
+### Contributing
 
-If you encounter issues:
-
-1. Check the add-on logs
-2. Review the troubleshooting section
-3. Check the GitHub repository for issues
-4. Ask in the Home Assistant community forums
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.
+
+## Support
+
+For support and questions:
+
+1. Check the logs in the add-on page
+2. Review the troubleshooting section
+3. Open an issue on GitHub
+4. Check the Home Assistant community forums 

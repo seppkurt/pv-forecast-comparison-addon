@@ -16,7 +16,7 @@ This guide will help you install the PV Forecast Comparison add-on in your Home 
    - Go to **Settings** → **Add-ons** → **Add-on Store**
    - Click the three dots (⋮) in the top right
    - Select **Repositories**
-   - Add: `https://github.com/your-username/pv-forecast-comparison-addon`
+   - Add: `https://github.com/seppkurt/pv-forecast-comparison-addon`
    - Click **Add**
 
 2. **Install the Add-on**
@@ -38,7 +38,7 @@ This guide will help you install the PV Forecast Comparison add-on in your Home 
    ```bash
    # In SSH & Web Terminal
    cd /addons
-   git clone https://github.com/your-username/pv-forecast-comparison-addon
+   git clone https://github.com/seppkurt/pv-forecast-comparison-addon
    ```
 
 2. **Install via Supervisor**
