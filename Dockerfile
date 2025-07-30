@@ -1,25 +1,32 @@
-FROM python:3.9-alpine
+ARG BUILD_FROM
+FROM $BUILD_FROM
 
-# Install required packages
-RUN apk add --no-cache \
+# Install requirements for add-on
+RUN \
+  apk add --no-cache \
+    python3 \
+    py3-pip \
     sqlite \
-    curl \
-    && pip3 install --no-cache-dir \
+    curl
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir \
     requests \
     aiohttp \
-    asyncio
+    asyncio \
+    pyyaml
 
 # Create app directory
 WORKDIR /app
 
-# Copy application files
+# Copy data for add-on
+COPY run.sh /
 COPY run.py /app/
 COPY pv_forecast_comparison.py /app/
 COPY pv_data_retriever.py /app/
-COPY config.yaml /app/
 
 # Make scripts executable
-RUN chmod +x /app/run.py
+RUN chmod a+x /run.sh
 
 # Create data directory
 RUN mkdir -p /data
@@ -28,4 +35,4 @@ RUN mkdir -p /data
 EXPOSE 8123
 
 # Start the application
-CMD ["python3", "/app/run.py"] 
+CMD [ "/run.sh" ] 

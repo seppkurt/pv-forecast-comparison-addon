@@ -1,248 +1,144 @@
 # PV Forecast Comparison Add-on Installation Guide
 
-This guide will help you install the PV Forecast Comparison add-on in your Home Assistant setup.
+This guide will help you install and configure the PV Forecast Comparison add-on in Home Assistant.
 
 ## Prerequisites
 
 - Home Assistant with Supervisor (not Home Assistant Core)
-- SSH & Web Terminal add-on installed (optional, for manual installation)
-- Long-lived access token from Home Assistant
+- A long-lived access token for Home Assistant
+- PV production sensors in your Home Assistant instance
 
-## Installation Methods
+## Step 1: Add the Repository
 
-### Method 1: GitHub Repository (Recommended)
-
-1. **Add the Repository**
-   - Go to **Settings** → **Add-ons** → **Add-on Store**
-   - Click the three dots (⋮) in the top right
-   - Select **Repositories**
-   - Add: `https://github.com/seppkurt/pv-forecast-comparison-addon`
-   - Click **Add**
-
-2. **Install the Add-on**
-   - Go to **Settings** → **Add-ons** → **Add-on Store**
-   - Search for "PV Forecast Comparison"
-   - Click on the add-on
-   - Click **Install**
-
-3. **Configure the Add-on**
-   - After installation, click **Start**
-   - Go to the **Configuration** tab
-   - Set your **Home Assistant URL** (usually `http://supervisor/core`)
-   - Add your **Long-lived Access Token**
-   - Click **Save**
-
-### Method 2: Manual Installation
-
-1. **Download the Add-on Files**
-   ```bash
-   # In SSH & Web Terminal
-   cd /addons
-   git clone https://github.com/seppkurt/pv-forecast-comparison-addon
+1. Open your Home Assistant web interface
+2. Go to **Settings** → **Add-ons**
+3. Click on **Add-on Store** in the bottom right corner
+4. Click the three dots menu (⋮) in the top right
+5. Select **Repositories**
+6. Click the **+** button to add a new repository
+7. Enter the repository URL:
    ```
-
-2. **Install via Supervisor**
-   - Go to **Settings** → **Add-ons** → **Add-on Store**
-   - The add-on should appear in the list
-   - Click **Install**
-
-### Method 3: Direct File Installation
-
-1. **Create Add-on Directory**
-   ```bash
-   # In SSH & Web Terminal
-   mkdir -p /addons/pv-forecast-comparison
-   cd /addons/pv-forecast-comparison
+   https://github.com/seppkurt/pv-forecast-comparison-addon
    ```
+8. Click **Add**
 
-2. **Copy Files**
-   ```bash
-   # Copy all files from the addon/ directory
-   cp -r /path/to/your/addon/* .
-   ```
+## Step 2: Install the Add-on
 
-3. **Install via Supervisor**
-   - Restart the Supervisor
-   - The add-on should appear in the Add-on Store
+1. In the Add-on Store, you should now see a new section called **Local add-ons**
+2. Find **PV Forecast Comparison** in the list
+3. Click on the add-on to open its details page
+4. Click **Install**
+5. Wait for the installation to complete
 
-## Configuration
+## Step 3: Configure the Add-on
+
+1. After installation, click **Configuration** tab
+2. Configure the following settings:
 
 ### Required Settings
 
-1. **Home Assistant URL**
-   - Usually: `http://supervisor/core`
-   - If using external access: `http://your-ha-ip:8123`
+**Home Assistant URL:**
+- Default: `http://supervisor/core`
+- This should work for most installations
 
-2. **Long-Lived Access Token**
-   - Go to your **Profile** in Home Assistant
-   - Scroll down to **Long-Lived Access Tokens**
-   - Click **Create Token**
-   - Give it a name like "PV Forecast Comparison"
-   - Copy the token and paste it in the add-on configuration
+**Home Assistant Token:**
+- Go to your Home Assistant profile page
+- Scroll down to **Long-Lived Access Tokens**
+- Click **Create Token**
+- Give it a name like "PV Forecast Comparison"
+- Copy the token and paste it in the add-on configuration
 
 ### Optional Settings
 
-- **Forecast Entities**: List of entities to try for PV forecast data
-- **Production Entities**: List of entities to try for current PV production
-- **Daily Entities**: List of entities to try for daily PV production
-- **Collection Times**: Customize when data is collected
-- **Log Level**: Set logging verbosity
+**Forecast Entities:**
+- List of sensor entities that provide PV production forecasts
+- Default entities are pre-configured for common names
 
-## Verification
+**Production Entities:**
+- List of sensor entities that provide actual PV production data
+- Default entities are pre-configured for common names
 
-### 1. Check Add-on Status
-- Go to **Settings** → **Add-ons**
-- Find "PV Forecast Comparison"
-- Status should show "Running"
+**Daily Entities:**
+- List of sensor entities that provide daily energy totals
+- Default entities are pre-configured for common names
 
-### 2. Access Web Interface
-- Click on the add-on
-- Click **Open Web UI**
-- You should see the PV Forecast Comparison interface
+**Collection Times:**
+- Dictionary mapping time slots to collection times
+- Default: 4am, 11am, 3pm, 11pm
 
-### 3. Test Manual Collection
-- In the web interface, click **Collect 4 AM Data**
-- Check the **System Status** section
-- Verify data appears in **Latest Data**
+**Log Level:**
+- Set to INFO for normal operation
+- Set to DEBUG for troubleshooting
 
-### 4. Check Logs
-- In the add-on page, go to the **Logs** tab
-- Look for successful data collection messages
+## Step 4: Start the Add-on
+
+1. Click **Start** to launch the add-on
+2. Check the **Logs** tab to ensure it started successfully
+3. You should see messages indicating the add-on is running
+
+## Step 5: Access the Web Interface
+
+1. Once the add-on is running, click **Open Web UI**
+2. Or navigate to: `http://your-home-assistant-ip:8123`
+3. You should see the PV Forecast Comparison dashboard
+
+## Step 6: Verify Data Collection
+
+1. In the web interface, click one of the manual collection buttons
+2. Check that data is being collected successfully
+3. View the charts and statistics to verify everything is working
 
 ## Troubleshooting
 
 ### Add-on Won't Start
+- Check the logs for error messages
+- Verify your Home Assistant URL and token are correct
+- Ensure your Home Assistant instance is accessible
 
-1. **Check Configuration**
-   - Verify Home Assistant URL is correct
-   - Ensure long-lived access token is valid
-   - Check that required fields are filled
+### No Data in Charts
+- Verify your entity names exist in Home Assistant
+- Check that entities are providing numeric values
+- Ensure your token has access to the configured entities
 
-2. **Check Logs**
-   - Go to the add-on page
-   - Click **Logs** tab
-   - Look for error messages
+### Web Interface Not Loading
+- Check that port 8123 is not being used by another service
+- Try refreshing the browser cache
+- Verify the add-on is running and healthy
 
-3. **Common Issues**
-   - **Port conflict**: Change port in configuration
-   - **Permission issues**: Check file permissions
-   - **Network issues**: Verify Home Assistant URL
+### Common Entity Names
 
-### No Data Collected
+If you're not sure what entities to use, here are some common patterns:
 
-1. **Verify Entity Names**
-   - Check your PV entity names in Home Assistant
-   - Go to **Developer Tools** → **States**
-   - Search for your PV entities
+**Forecast Entities:**
+- `sensor.solar_forecast`
+- `sensor.pv_production_forecast`
+- `sensor.solar_production_forecast`
 
-2. **Test API Access**
-   ```bash
-   # In SSH & Web Terminal
-   curl -H "Authorization: Bearer YOUR_TOKEN" \
-        -H "Content-Type: application/json" \
-        "http://supervisor/core/api/states/sensor.your_pv_entity"
-   ```
+**Production Entities:**
+- `sensor.solar_power`
+- `sensor.pv_power`
+- `sensor.solar_production`
 
-3. **Check Entity Availability**
-   - Ensure your PV entities are not "unavailable"
-   - Verify they have valid values
+**Daily Entities:**
+- `sensor.solar_daily_energy`
+- `sensor.pv_today_energy`
+- `sensor.solar_today_energy`
 
-### Web Interface Not Accessible
-
-1. **Check Port**
-   - Verify port 8123 is not used by another add-on
-   - Change port in configuration if needed
-
-2. **Check Network**
-   - Ensure add-on is running
-   - Check firewall settings
-
-3. **Access via IP**
-   - Try accessing via IP address instead of hostname
-   - Use: `http://your-ha-ip:8123`
-
-## Integration with Home Assistant
-
-### 1. Create Sensors
-Add these to your `configuration.yaml`:
-
-```yaml
-sensor:
-  - platform: rest
-    name: "PV Forecast Data"
-    resource: http://localhost:8123/api/data
-    scan_interval: 300
-    value_template: "{{ value }}"
-    
-  - platform: rest
-    name: "PV Forecast Status"
-    resource: http://localhost:8123/api/status
-    scan_interval: 300
-    value_template: "{{ value_json.online }}"
-```
-
-### 2. Create Automations
-```yaml
-automation:
-  - alias: "PV Forecast Manual Collection"
-    trigger:
-      - platform: event
-        event_type: pv_forecast_manual_trigger
-    action:
-      - service: rest_command.pv_forecast_collect
-        data:
-          url: http://localhost:8123/api/collect
-          method: POST
-          payload: '{"time_slot": "{{ trigger.event.data.time_slot }}"}'
-```
-
-### 3. Create Dashboard
-Use the dashboard configuration from the original files or create your own using the REST sensors.
-
-## Maintenance
-
-### Backup Data
-```bash
-# In SSH & Web Terminal
-cp /data/pv_forecast.db /backup/pv_forecast.db.backup
-```
-
-### Update Add-on
-- Go to the add-on page
-- Click **Update** when available
-- Restart the add-on after update
-
-### Clean Old Data
-```bash
-# Access the add-on container
-docker exec -it addon_pv_forecast_comparison sh
-
-# Clean old data
-sqlite3 /data/pv_forecast.db "DELETE FROM pv_forecast WHERE date < date('now', '-30 days');"
-```
-
-## Support
+## Getting Help
 
 If you encounter issues:
 
-1. Check the add-on logs
-2. Review the troubleshooting section
-3. Check the GitHub repository for issues
-4. Ask in the Home Assistant community forums
+1. Check the add-on logs for error messages
+2. Verify your configuration settings
+3. Test your Home Assistant token manually
+4. Visit the [GitHub repository](https://github.com/seppkurt/pv-forecast-comparison-addon) for issues
+5. Ask for help in the [Home Assistant Community](https://community.home-assistant.io/)
 
-## Uninstallation
+## Next Steps
 
-1. **Stop the Add-on**
-   - Go to the add-on page
-   - Click **Stop**
+Once the add-on is running:
 
-2. **Uninstall**
-   - Click **Uninstall**
-   - Confirm the action
-
-3. **Clean Up (Optional)**
-   ```bash
-   # Remove data directory
-   rm -rf /data/pv_forecast.db
-   rm -rf /data/pv_forecast.log
-   ``` 
+1. **Monitor the data**: Check the web interface regularly to see forecast accuracy
+2. **Adjust configuration**: Fine-tune entity names and collection times as needed
+3. **Analyze trends**: Use the historical data to improve your forecasting
+4. **Automate**: Set up automations based on forecast accuracy patterns 

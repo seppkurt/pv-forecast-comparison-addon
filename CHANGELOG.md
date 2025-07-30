@@ -1,34 +1,32 @@
 # Changelog
 
-All notable changes to the PV Forecast Comparison Add-on will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [1.0.0] - 2024-01-XX
+## [1.0.0] - 2024-01-01
 
 ### Added
-- Initial release of PV Forecast Comparison Add-on
-- Automated data collection at 4 AM, 11 AM, 3 PM, and 11 PM
-- Web interface for monitoring and manual data collection
+- Initial release of PV Forecast Comparison add-on
+- Web interface with real-time charts and statistics
+- Automated data collection at configurable times (4am, 11am, 3pm, 11pm)
+- Manual data collection through web interface
+- Historical data analysis with 7-day charts
+- SQLite database for reliable data storage
 - REST API endpoints for integration
-- SQLite database for data storage
-- Configurable entity names for different PV systems
-- Real-time status monitoring
-- Scheduled task management
+- Configurable entity mapping for forecast and production sensors
+- Beautiful dashboard with accuracy metrics
+- System status monitoring
 - Logging and error handling
 
 ### Features
-- **Data Collection**: Automatic collection of forecast and actual PV production data
-- **Web UI**: Built-in interface for monitoring and manual operations
-- **API**: REST endpoints for external integration
-- **Database**: SQLite storage with automatic table creation
-- **Configuration**: Easy setup through add-on options
-- **Logging**: Comprehensive logging with configurable levels
+- Compare PV production forecasts with actual production data
+- Track forecasting accuracy over time
+- Identify patterns in solar production
+- Monitor daily energy production vs forecasts
+- Export data for further analysis
+- Responsive web interface for mobile and desktop
 
 ### Technical Details
-- Python 3.9+ based add-on
-- aiohttp web framework
-- SQLite database backend
-- Docker containerization
-- Multi-architecture support (armhf, armv7, aarch64, amd64, i386) 
+- Built with Python 3.9 and Alpine Linux
+- Uses aiohttp for async web server
+- SQLite database for data persistence
+- Chart.js for interactive visualizations
+- Home Assistant REST API integration
+- Docker-based deployment 

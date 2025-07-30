@@ -1,7 +1,7 @@
 name: "PV Forecast Comparison"
+description: "Compare PV production forecasts with actual production data"
 version: "1.0.0"
 slug: "pv_forecast_comparison"
-description: "Compare PV production forecasts with actual production data"
 arch:
   - armhf
   - armv7

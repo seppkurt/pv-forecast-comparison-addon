@@ -1,50 +1,47 @@
 # PV Forecast Comparison Add-on
 
-A Home Assistant add-on that compares PV production forecasts with actual production data. It automatically collects data at 4 AM, 11 AM, 3 PM, and 11 PM to track forecast accuracy and production patterns.
+A Home Assistant add-on that compares PV production forecasts with actual production data to help you monitor and improve your solar forecasting accuracy.
 
 ## Features
 
-- **Automated Data Collection**: Scheduled collection at 4 AM, 11 AM, 3 PM, and 11 PM
-- **Web Interface**: Built-in web UI for monitoring and manual data collection
-- **SQLite Database**: Reliable data storage with automatic backups
-- **Configurable Entities**: Easy configuration of PV entity names
-- **REST API**: API endpoints for integration with other systems
-- **Real-time Monitoring**: Live status and data viewing
+- **Real-time Comparison**: Compare forecasted vs actual PV production at different times of day
+- **Historical Analysis**: View historical data to identify forecasting trends
+- **Web Interface**: Beautiful web dashboard with charts and statistics
+- **Automated Collection**: Scheduled data collection at configurable times (4am, 11am, 3pm, 11pm)
+- **Manual Collection**: Trigger data collection manually through the web interface
+- **Multiple Entity Support**: Configure multiple forecast and production entities
 
 ## Installation
 
-### Method 1: Manual Installation
-
-1. Download the add-on files to your Home Assistant `/addons` directory
-2. Add the repository to your Home Assistant Supervisor
-3. Install the add-on from the Add-on Store
-
-### Method 2: Direct Repository
-
-Add this repository to your Home Assistant Supervisor:
-
+1. Add this repository to your Home Assistant add-on store:
    ```
    https://github.com/seppkurt/pv-forecast-comparison-addon
    ```
 
+2. Install the "PV Forecast Comparison" add-on from the add-on store
+
+3. Configure the add-on with your Home Assistant URL and token
+
+4. Start the add-on
+
 ## Configuration
 
-### Required Settings
+### Required Configuration
 
-1. **Home Assistant URL**: Usually `http://supervisor/core`
-2. **Long-Lived Access Token**: Create this in your Home Assistant profile
+- **ha_url**: Your Home Assistant URL (default: `http://supervisor/core`)
+- **ha_token**: Your Home Assistant long-lived access token
 
-### Optional Settings
+### Optional Configuration
 
-- **Forecast Entities**: List of entities to try for PV forecast data
-- **Production Entities**: List of entities to try for current PV production
-- **Daily Entities**: List of entities to try for daily PV production
-- **Collection Times**: Customize when data is collected
-- **Log Level**: Set logging verbosity (DEBUG, INFO, WARNING, ERROR)
+- **forecast_entities**: List of sensor entities that provide PV production forecasts
+- **production_entities**: List of sensor entities that provide actual PV production data
+- **daily_entities**: List of sensor entities that provide daily energy totals
+- **collection_times**: Dictionary mapping time slots to collection times
+- **log_level**: Logging level (INFO, DEBUG, WARNING, ERROR)
 
-### Entity Configuration
+### Default Entity Names
 
-The add-on will automatically try these common entity names:
+The add-on is pre-configured to look for these common entity names:
 
 **Forecast Entities:**
 - `sensor.pv_production_forecast`
@@ -68,115 +65,61 @@ The add-on will automatically try these common entity names:
 
 ### Web Interface
 
-Access the web interface at `http://your-ha-ip:8123` after installation. The interface provides:
-
-- **Manual Data Collection**: Buttons to trigger data collection for each time slot
-- **System Status**: Real-time status of the add-on
-- **Latest Data**: View the most recent collected data
-
-### API Endpoints
-
-The add-on provides REST API endpoints:
-
-- `GET /api/status` - Get system status
-- `GET /api/data` - Get latest data
-- `POST /api/collect` - Trigger manual data collection
-- `GET /api/config` - Get current configuration
-
-### Example API Usage
-
-```bash
-# Get system status
-curl http://your-ha-ip:8123/api/status
-
-# Trigger 11 AM data collection
-curl -X POST http://your-ha-ip:8123/api/collect \
-  -H "Content-Type: application/json" \
-  -d '{"time_slot": "11am"}'
-
-# Get latest data
-curl http://your-ha-ip:8123/api/data
+Once the add-on is running, access the web interface at:
+```
+http://your-home-assistant-ip:8123
 ```
 
-## Data Collection Schedule
+The web interface provides:
+- **Dashboard**: Real-time comparison charts
+- **Manual Collection**: Buttons to trigger data collection
+- **Historical Data**: 7-day historical comparison charts
+- **System Status**: Add-on status and database information
 
-- **4 AM**: Collects forecast data (no actual production yet)
-- **11 AM**: Collects forecast + current production data
-- **3 PM**: Collects forecast + current production data
-- **11 PM**: Collects daily totals (complete day's production)
+### Data Collection
 
-## Data Storage
+The add-on automatically collects data at the following times:
+- **4:00 AM**: Early morning forecast vs actual
+- **11:00 AM**: Mid-morning comparison
+- **3:00 PM**: Afternoon peak comparison
+- **11:00 PM**: End-of-day summary
 
-Data is stored in a SQLite database at `/data/pv_forecast.db` with two main tables:
+You can also manually trigger data collection through the web interface.
 
-### pv_forecast table
-- `id`: Primary key
-- `date`: Date (YYYY-MM-DD)
-- `time_slot`: Time slot (4am, 11am, 3pm, 11pm)
-- `forecast_wh`: Forecasted production in Wh
-- `actual_wh`: Actual production in Wh
-- `timestamp`: When the data was stored
+### Understanding the Data
 
-### daily_production table
-- `id`: Primary key
-- `date`: Date (YYYY-MM-DD)
-- `total_forecast_wh`: Total forecasted production for the day
-- `total_actual_wh`: Total actual production for the day
-- `timestamp`: When the data was stored
+- **Forecast vs Actual**: Compare predicted energy production with actual production
+- **Accuracy Percentage**: Shows how accurate your forecasts are
+- **Daily Totals**: Compare total daily forecast with actual daily production
+- **Historical Trends**: View patterns over time to improve forecasting
 
 ## Troubleshooting
 
-### Common Issues
+### Add-on Won't Start
+- Check that `ha_url` and `ha_token` are properly configured
+- Verify that your Home Assistant instance is accessible
+- Check the add-on logs for error messages
 
-1. **Add-on won't start**: Check the logs in the add-on page
-2. **No data collected**: Verify your entity names and access token
-3. **Web interface not accessible**: Check if port 8123 is available
+### No Data Appearing
+- Ensure your configured entities exist in Home Assistant
+- Check that entities are providing numeric values
+- Verify the entities are accessible with your token
 
-### Logs
-
-View logs in the add-on page or check `/data/pv_forecast.log` in the container.
-
-### Manual Database Access
-
-```bash
-# Access the add-on container
-docker exec -it addon_pv_forecast_comparison sh
-
-# Query the database
-sqlite3 /data/pv_forecast.db "SELECT * FROM pv_forecast ORDER BY date DESC LIMIT 10;"
-```
-
-## Development
-
-### Building the Add-on
-
-```bash
-# Clone the repository
-git clone https://github.com/seppkurt/pv-forecast-comparison-addon
-
-# Build the add-on
-docker build -t pv-forecast-comparison .
-
-# Run locally for testing
-docker run -p 8123:8123 -v /path/to/data:/data pv-forecast-comparison
-```
-
-### Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
+### Web Interface Not Loading
+- Ensure port 8123 is not being used by another service
+- Check that the add-on is running and healthy
+- Try refreshing the browser cache
 
 ## Support
 
-For support and questions:
+For issues and feature requests, please visit:
+- [GitHub Issues](https://github.com/seppkurt/pv-forecast-comparison-addon/issues)
+- [Home Assistant Community](https://community.home-assistant.io/)
 
-1. Check the logs in the add-on page
-2. Review the troubleshooting section
-3. Open an issue on GitHub
-4. Check the Home Assistant community forums 
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. 

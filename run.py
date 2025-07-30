@@ -39,39 +39,45 @@ class PVForecastAddon:
         """Load configuration from add-on options."""
         config_path = '/data/options.json'
         if os.path.exists(config_path):
-            with open(config_path, 'r') as f:
-                return json.load(f)
-        else:
-            # Default configuration
-            return {
-                'ha_url': 'http://supervisor/core',
-                'ha_token': '',
-                'forecast_entities': [
-                    'sensor.pv_production_forecast',
-                    'sensor.solar_forecast',
-                    'sensor.pv_forecast',
-                    'sensor.solar_production_forecast'
-                ],
-                'production_entities': [
-                    'sensor.pv_power',
-                    'sensor.solar_power',
-                    'sensor.pv_production',
-                    'sensor.solar_production'
-                ],
-                'daily_entities': [
-                    'sensor.pv_daily_energy',
-                    'sensor.solar_daily_energy',
-                    'sensor.pv_today_energy',
-                    'sensor.solar_today_energy'
-                ],
-                'collection_times': {
-                    '4am': '04:00:00',
-                    '11am': '11:00:00',
-                    '3pm': '15:00:00',
-                    '11pm': '23:00:00'
-                },
-                'log_level': 'INFO'
-            }
+            try:
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+                    logger.info("Loaded configuration from options.json")
+                    return config
+            except Exception as e:
+                logger.error(f"Error loading config from options.json: {e}")
+        
+        # Default configuration
+        logger.info("Using default configuration")
+        return {
+            'ha_url': 'http://supervisor/core',
+            'ha_token': '',
+            'forecast_entities': [
+                'sensor.pv_production_forecast',
+                'sensor.solar_forecast',
+                'sensor.pv_forecast',
+                'sensor.solar_production_forecast'
+            ],
+            'production_entities': [
+                'sensor.pv_power',
+                'sensor.solar_power',
+                'sensor.pv_production',
+                'sensor.solar_production'
+            ],
+            'daily_entities': [
+                'sensor.pv_daily_energy',
+                'sensor.solar_daily_energy',
+                'sensor.pv_today_energy',
+                'sensor.solar_today_energy'
+            ],
+            'collection_times': {
+                '4am': '04:00:00',
+                '11am': '11:00:00',
+                '3pm': '15:00:00',
+                '11pm': '23:00:00'
+            },
+            'log_level': 'INFO'
+        }
     
     async def start(self):
         """Start the add-on services."""
